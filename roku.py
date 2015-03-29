@@ -1,3 +1,5 @@
+import requests
+import curses
 import socket
 import re
 
@@ -16,12 +18,10 @@ def find_roku():
     data = s.recv(1024)
     return data
 
-def press(sock, key):
-    message = "POST /keypress/home HTTP/1.1\r\nHost: 192.168.1.247:8060\r\n\r\n"
-    print message
-    
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.sendall(message)
+def keypress(url, key):
+    request_url = url + '/keypress/' + key
+    # requests.post()
+    return request_url
 
 class HTTPResponse(dict):
     def __init__(self, response_text):
@@ -46,9 +46,32 @@ def main():
     # location = response.headers['location']
 
     test  = 'Host: 192.168.1.247:8060'
-    m = re.search('(?:[0-9]{1,3}\.){3}[0-9]{1,3}', test)
-    host = m.group(0)
-    print host
+    r = re.search('(?:[0-9]{1,3}\.){3}[0-9]{1,3}', test)
+    host = r.group(0)
+    r = re.search('(?<=:)[0-9]{4}', test)
+    port = r.group(0)
+    assert host == '192.168.1.247'
+    assert port == '8060'
+    command = 'up'
+    url = 'http://{}:{}'.format(host, port)
+    print keypress(url, command)
+
+    # stdscr = curses.initscr()
+    # stdscr.keypad(1)
+    # 
+    # stdscr.addstr(0,10,"Hit 'q' to quit")
+    # stdscr.refresh()
+    # 
+    # key = ''
+    # while key != ord('q'):
+    #     key = stdscr.getch()
+    #     stdscr.refresh()
+    #     if key == curses.KEY_UP: 
+    #         stdscr.addstr(2, 20, "Up")
+    #     elif key == curses.KEY_DOWN: 
+    #         stdscr.addstr(3, 20, "Down")
+    # 
+    # curses.endwin()
 
 
 if __name__ == '__main__':
