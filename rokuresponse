@@ -1,0 +1,9 @@
+HTTP/1.1 200 OK
+Cache-Control: max-age=3600
+ST: roku:ecp
+USN: uuid:roku:ecp:12C1CM005293
+Ext: 
+Server: Roku UPnP/1.0 MiniUPnPd/1.4
+LOCATION: http://192.168.1.247:8060/
+
+

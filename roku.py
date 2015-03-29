@@ -1,7 +1,5 @@
 import socket
-
-# host = '192.168.1.247'
-# port = 8060
+import re
 
 DISCOVER_GROUP = ('239.255.255.250', 1900)
 
@@ -11,8 +9,6 @@ Host: %s:%s\r\n\
 Man: "ssdp:discover"\r\n\
 ST: roku:ecp\r\n\r\n\
 ''' % DISCOVER_GROUP
-
-print DISCOVER_MESSAGE
 
 def find_roku():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -27,4 +23,33 @@ def press(sock, key):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.sendall(message)
 
-print find_roku()
+class HTTPResponse(dict):
+    def __init__(self, response_text):
+
+        response = response_text.split('\r\n')
+        status_line = response[0]
+
+        self.http_version, self.status_code, self.status = status_line.split()
+        self.headers = {}
+
+        for line in response[1:]:
+            line = line.split()
+            if len(line) == 2:
+                header_name = line[0][:-1]
+                header_value = line[1]
+                self.headers[header_name.lower()] = header_value.lower()
+
+
+def main():
+    # response_text = find_roku()
+    # response = HTTPResponse(response_text)
+    # location = response.headers['location']
+
+    test  = 'Host: 192.168.1.247:8060'
+    m = re.search('(?:[0-9]{1,3}\.){3}[0-9]{1,3}', test)
+    host = m.group(0)
+    print host
+
+
+if __name__ == '__main__':
+    main()
