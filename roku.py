@@ -42,7 +42,7 @@ def keypress(url, key):
     requests.post(request_url)
     return request_url
 
-class HTTPResponse(dict):
+class HTTPResponse(object):
     def __init__(self, response_text):
 
         response = response_text.split('\r\n')
