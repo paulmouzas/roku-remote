@@ -68,9 +68,11 @@ def main():
         stdscr = curses.initscr()
         stdscr.keypad(1)
         
-        stdscr.addstr(0,0, 'Found one at %s!' % location)
-        stdscr.addstr(1,0,"Press escape to quit")
-        stdscr.addstr(2,0, 'Use the arrow keys to move the cursor and press Enter to select')
+        stdscr.addstr(0,0, 'Connected to %s!' % location)
+        stdscr.addstr(1,0, 'escape: quit')
+        stdscr.addstr(2,0, 'arrow keys: move cursor')
+        stdscr.addstr(3,0, 'enter: select')
+        stdscr.addstr(4,0, 'tab: go back')
         stdscr.refresh()
         
         key = ''
