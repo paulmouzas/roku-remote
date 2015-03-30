@@ -1,7 +1,6 @@
 import requests
 import curses
 import socket
-import re
 import string
 
 KEYPRESS_MAP = {}
@@ -9,15 +8,17 @@ KEYPRESS_MAP = {}
 for char in string.ascii_lowercase + string.ascii_uppercase:
     KEYPRESS_MAP[ord(char)] = char.lower()
 
-KEYPRESS_MAP[9] = 'back'
-KEYPRESS_MAP[10] = 'select'
-KEYPRESS_MAP[32] = '%20'
-KEYPRESS_MAP[96] = 'home'
-KEYPRESS_MAP[258] = 'down'
-KEYPRESS_MAP[259] = 'up'
-KEYPRESS_MAP[260] = 'left'
-KEYPRESS_MAP[261] = 'right'
-KEYPRESS_MAP[263] = 'backspace'
+KEYPRESS_MAP = {
+        9: 'back',
+        10: 'select',
+        32: '#20',
+        96: 'home',
+        258: 'down',
+        259: 'up',
+        260: 'left',
+        261: 'right',
+        263: 'backspace'
+    }
 
 DISCOVER_GROUP = ('239.255.255.250', 1900)
 
@@ -45,9 +46,11 @@ class HTTPResponse(dict):
     def __init__(self, response_text):
 
         response = response_text.split('\r\n')
-        status_line = response[0]
+        status_line = response[0].split()
 
-        self.http_version, self.status_code, self.status = status_line.split()
+        self.http_version = status_line[0]
+        self.status_code = status_line[1]
+        self.status = status_line[2]
         self.headers = {}
 
         for line in response[1:]:
