@@ -11,7 +11,7 @@ for char in string.ascii_lowercase + string.ascii_uppercase:
 KEYPRESS_MAP.update({
         9: 'back',
         10: 'select',
-        32: '#20',
+        32: '%20',
         96: 'home',
         258: 'down',
         259: 'up',
