@@ -8,7 +8,7 @@ KEYPRESS_MAP = {}
 for char in string.ascii_lowercase + string.ascii_uppercase:
     KEYPRESS_MAP[ord(char)] = char.lower()
 
-KEYPRESS_MAP = {
+KEYPRESS_MAP.update({
         9: 'back',
         10: 'select',
         32: '#20',
@@ -18,7 +18,16 @@ KEYPRESS_MAP = {
         260: 'left',
         261: 'right',
         263: 'backspace'
-    }
+    })
+KEYPRESS_MAP[9] = 'back'
+KEYPRESS_MAP[10] = 'select'
+KEYPRESS_MAP[32] = '%20'
+KEYPRESS_MAP[96] = 'home'
+KEYPRESS_MAP[258] = 'down'
+KEYPRESS_MAP[259] = 'up'
+KEYPRESS_MAP[260] = 'left'
+KEYPRESS_MAP[261] = 'right'
+KEYPRESS_MAP[263] = 'backspace'
 
 DISCOVER_GROUP = ('239.255.255.250', 1900)
 
