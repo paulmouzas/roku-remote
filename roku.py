@@ -2,6 +2,22 @@ import requests
 import curses
 import socket
 import re
+import string
+
+KEYPRESS_MAP = {}
+
+for char in string.ascii_lowercase + string.ascii_uppercase:
+    KEYPRESS_MAP[ord(char)] = char.lower()
+
+KEYPRESS_MAP[9] = 'back'
+KEYPRESS_MAP[10] = 'select'
+KEYPRESS_MAP[32] = '%20'
+KEYPRESS_MAP[96] = 'home'
+KEYPRESS_MAP[258] = 'down'
+KEYPRESS_MAP[259] = 'up'
+KEYPRESS_MAP[260] = 'left'
+KEYPRESS_MAP[261] = 'right'
+KEYPRESS_MAP[263] = 'backspace'
 
 DISCOVER_GROUP = ('239.255.255.250', 1900)
 
@@ -19,8 +35,10 @@ def find_roku():
     return data
 
 def keypress(url, key):
-    request_url = url + '/keypress/' + key
-    # requests.post()
+    if key in string.ascii_lowercase:
+        key = 'lit_' + key
+    request_url = url + 'keypress/' + key
+    requests.post(request_url)
     return request_url
 
 class HTTPResponse(dict):
@@ -41,38 +59,30 @@ class HTTPResponse(dict):
 
 
 def main():
-    # response_text = find_roku()
-    # response = HTTPResponse(response_text)
-    # location = response.headers['location']
+    print 'Searching for a Roku device...'
+    response_text = find_roku()
+    response = HTTPResponse(response_text)
+    location = response.headers['location']
 
-    test  = 'Host: 192.168.1.247:8060'
-    r = re.search('(?:[0-9]{1,3}\.){3}[0-9]{1,3}', test)
-    host = r.group(0)
-    r = re.search('(?<=:)[0-9]{4}', test)
-    port = r.group(0)
-    assert host == '192.168.1.247'
-    assert port == '8060'
-    command = 'up'
-    url = 'http://{}:{}'.format(host, port)
-    print keypress(url, command)
-
-    # stdscr = curses.initscr()
-    # stdscr.keypad(1)
-    # 
-    # stdscr.addstr(0,10,"Hit 'q' to quit")
-    # stdscr.refresh()
-    # 
-    # key = ''
-    # while key != ord('q'):
-    #     key = stdscr.getch()
-    #     stdscr.refresh()
-    #     if key == curses.KEY_UP: 
-    #         stdscr.addstr(2, 20, "Up")
-    #     elif key == curses.KEY_DOWN: 
-    #         stdscr.addstr(3, 20, "Down")
-    # 
-    # curses.endwin()
+    try:
+        stdscr = curses.initscr()
+        stdscr.keypad(1)
+        
+        stdscr.addstr(0,0, 'Found one at %s!' % location)
+        stdscr.addstr(1,0,"Press escape to quit")
+        stdscr.addstr(2,0, 'Use the arrow keys to move the cursor and press Enter to select')
+        stdscr.refresh()
+        
+        key = ''
+        while key != 27: # escape key
+            key = stdscr.getch()
+            stdscr.refresh()
+            if key: 
+                stdscr.addstr(0,10, str(key))
+                command = KEYPRESS_MAP.get(key, '')
+                keypress(location, command)
+    finally:
+        curses.endwin()
 
 
-if __name__ == '__main__':
-    main()
+if __name__ == '__main__': main()
