@@ -80,7 +80,6 @@ def main():
             key = stdscr.getch()
             stdscr.refresh()
             if key: 
-                stdscr.addstr(0,10, str(key))
                 command = KEYPRESS_MAP.get(key, '')
                 keypress(location, command)
     finally:
