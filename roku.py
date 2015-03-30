@@ -35,7 +35,7 @@ def find_roku():
     return data
 
 def keypress(url, key):
-    if key in string.ascii_lowercase:
+    if key in string.ascii_lowercase + '%20':
         key = 'lit_' + key
     request_url = url + 'keypress/' + key
     requests.post(request_url)
@@ -81,7 +81,7 @@ def main():
             stdscr.refresh()
             if key: 
                 command = KEYPRESS_MAP.get(key, '')
-                keypress(location, command)
+                http = keypress(location, command)
     finally:
         curses.endwin()
 
