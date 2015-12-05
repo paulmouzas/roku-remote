@@ -3,22 +3,23 @@ import curses
 import socket
 import string
 
+
 KEYPRESS_MAP = {}
 
 for char in string.ascii_lowercase + string.ascii_uppercase:
     KEYPRESS_MAP[ord(char)] = char.lower()
 
 KEYPRESS_MAP.update({
-        9: 'back',
-        10: 'select',
-        32: '%20',
-        96: 'home',
-        258: 'down',
-        259: 'up',
-        260: 'left',
-        261: 'right',
-        263: 'backspace'
-    })
+    9: 'back',
+    10: 'select',
+    32: '%20',
+    96: 'home',
+    258: 'down',
+    259: 'up',
+    260: 'left',
+    261: 'right',
+    263: 'backspace'
+})
 
 DISCOVER_GROUP = ('239.255.255.250', 1900)
 
@@ -29,18 +30,21 @@ Man: "ssdp:discover"\r\n\
 ST: roku:ecp\r\n\r\n\
 ''' % DISCOVER_GROUP
 
+
 def find_roku():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.sendto(DISCOVER_MESSAGE, DISCOVER_GROUP)
     data = s.recv(1024)
+    s.close()
     return data
+
 
 def keypress(url, key):
     if key in string.ascii_lowercase + '%20':
         key = 'lit_' + key
     request_url = url + 'keypress/' + key
-    requests.post(request_url)
-    return request_url
+    return requests.post(request_url)
+
 
 class HTTPResponse(object):
     def __init__(self, response_text):
@@ -70,21 +74,23 @@ def main():
     try:
         stdscr = curses.initscr()
         stdscr.keypad(1)
-        
-        stdscr.addstr(0,0, 'Connected to %s!' % location)
-        stdscr.addstr(1,0, 'escape: quit')
-        stdscr.addstr(2,0, 'arrow keys: move cursor')
-        stdscr.addstr(3,0, 'enter: select')
-        stdscr.addstr(4,0, 'tab: go back')
+
+        stdscr.addstr(0, 0, 'Connected to %s!' % location)
+        stdscr.addstr(1, 0, 'escape: quit')
+        stdscr.addstr(2, 0, 'arrow keys: move cursor')
+        stdscr.addstr(3, 0, 'enter: select')
+        stdscr.addstr(4, 0, 'tab: go back')
         stdscr.refresh()
-        
+
         key = ''
-        while key != 27: # escape key
+        while key != 27:  # escape key
             key = stdscr.getch()
             stdscr.refresh()
-            if key: 
+            if key:
                 command = KEYPRESS_MAP.get(key, '')
-                http = keypress(location, command)
+                resp = keypress(location, command)
+                if resp.status_code != 200:
+                    print 'Problem communicating with Roku'
     finally:
         curses.endwin()
 
